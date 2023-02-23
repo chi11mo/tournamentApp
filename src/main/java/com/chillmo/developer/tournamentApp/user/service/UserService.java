@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @AllArgsConstructor
@@ -28,13 +32,7 @@ public class UserService implements UserDetailsService {
 
     private final TokenRepository tokenRepository;
 
-    //private final TwitchService twitchService;
-
-
-
-
-
-
+    private final TwitchService twitchService;
 
 
     /**
@@ -47,14 +45,16 @@ public class UserService implements UserDetailsService {
     public User addUser(User user) {
 
 
-       // user = twitchService.setTwitchImg(user);
+        user = twitchService.setTwitchImg(user);
 
 
-       // final String encodedPassword = passwordEncoder.encode(user.getPassword());
-      //  user.setPassword(encodedPassword);
+        final String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        //Todo send confirmation Token and sending email
+        //tokenServiceImpl.generateToken(user);
+        return user;
 
-
-        return userRepository.save(user);
     }
 
     /**
@@ -104,7 +104,7 @@ public class UserService implements UserDetailsService {
      *
      * @param eMail for identify the searched {@link User}.
      * @return the searched {@link User}.
-*/
+     */
     public User findUserByeMail(final String eMail) {
         return userRepository.findUserByeMail(eMail);
     }
@@ -134,8 +134,7 @@ public class UserService implements UserDetailsService {
         if (tokenByTokenContent.getExpiresAt().isBefore(LocalDateTime.now())) {
             //logger.info("Token abgelaufen");
             return false;
-        }
-         else {
+        } else {
             setUserIsEnabled(user);
             // logger.info("User wurde aktiviert");
             return true;
@@ -148,7 +147,7 @@ public class UserService implements UserDetailsService {
      * @param user {@link User}/
      */
     public void setUserIsEnabled(final User user) {
-       // user.setIsEnabled(true);
+        // user.setIsEnabled(true);
         userRepository.save(user);
 
     }
@@ -165,13 +164,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        return userRepository.findUserByeMail(username);
     }
 
-/**
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findUserByEmail(username);
-    }
-    **/
 }

@@ -23,22 +23,27 @@ public class Token {
     private String tokenContent;
 
     @Column(nullable = false)
+    private LocalDateTime createdAt;
+    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "userID")
+    private LocalDateTime confirmedAt;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
     /**
      * Token constructor.
      *
-     * @param tokenContent   Token tokenContent
-     * @param expiresAt      Token expiresAt
-     * @param user           Token user
+     * @param tokenContent Token tokenContent
+     * @param expiresAt    Token expiresAt
+     * @param user         Token user
      */
-    public Token(final String tokenContent, final LocalDateTime expiresAt, final User user) {
+    public Token(final String tokenContent, final LocalDateTime createdAt, final LocalDateTime expiresAt, final LocalDateTime confirmedAt, final User user) {
         this.tokenContent = tokenContent;
         this.expiresAt = expiresAt;
+        this.createdAt = createdAt;
+        this.confirmedAt = null;
         this.user = user;
     }
 

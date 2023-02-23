@@ -28,7 +28,7 @@ public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncode
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/registration/**")
+                .antMatchers("/api/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated().and()

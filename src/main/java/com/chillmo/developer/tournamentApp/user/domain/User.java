@@ -1,11 +1,8 @@
 package com.chillmo.developer.tournamentApp.user.domain;
 
 
-
 import java.util.Collection;
 import java.util.Collections;
-
-
 
 
 import lombok.Getter;
@@ -23,7 +20,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "twitch"),
+               //@UniqueConstraint(columnNames = "twitch"),
                 @UniqueConstraint(columnNames = "eMail")
         })
 public class User implements UserDetails {
@@ -38,8 +35,9 @@ public class User implements UserDetails {
     private String psn;
     private String steam;
     private String imgUrl;
-    private Boolean locked;
-    private Boolean enabled;
+    private Boolean locked = false;
+    private Boolean enabled = false;
+
 
     @Lob
     @Column
@@ -56,9 +54,6 @@ public class User implements UserDetails {
     private Role role;
 
 
-
-
-
     public User() {
 
     }
@@ -69,10 +64,20 @@ public class User implements UserDetails {
         this.discord = discord;
         this.psn = psn;
         this.steam = steam;
-        this.locked = locked;
-        this.enabled = enabled;
+        this.locked = false;
+        this.enabled = false;
         this.password = password;
-        this.role = role;
+        this.role = Role.USER;
+    }
+
+    public User(String twitch, String eMail, String discord, String psn, String steam, String password) {
+        this.twitch = twitch;
+        this.eMail = eMail;
+        this.discord = discord;
+        this.psn = psn;
+        this.steam = steam;
+        this.password = password;
+        this.role = Role.USER;
     }
 
     @Override
