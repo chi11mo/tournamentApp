@@ -22,3 +22,12 @@ The platform is built using the following technology stack:
 - Backend: Java Spring Boot
 - Frontend: React.js, Bootstrap
 - Database: H2 Database Engine
+
+
+## Roadmap
+### Database
+- Event Feature Head2Head
+
+- Event Feature Tournament
+
+- Event Feature League Session
