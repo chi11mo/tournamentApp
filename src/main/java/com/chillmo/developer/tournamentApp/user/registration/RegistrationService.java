@@ -29,9 +29,6 @@ public class RegistrationService {
            return new ResponseEntity<>(userService.addUser(new User(
                     request.getTwitch(),
                     request.getEMail(),
-                    request.getDiscord(),
-                    request.getPsn(),
-                    request.getSteam(),
                     request.getPassword()
             )),HttpStatus.OK);
 

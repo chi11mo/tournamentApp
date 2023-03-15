@@ -3,8 +3,11 @@ package com.chillmo.developer.tournamentApp.user.domain;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 
+import com.chillmo.developer.tournamentApp.event.domain.Event;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,6 +57,10 @@ public class User implements UserDetails {
     private Role role;
 
 
+    @ManyToMany
+    Set<Event> participatingEvents;
+
+
     public User() {
 
     }
@@ -80,6 +87,13 @@ public class User implements UserDetails {
         this.role = Role.USER;
     }
 
+    public User(String twitch, String eMail, String password) {
+        this.twitch = twitch;
+        this.eMail = eMail;
+        this.password = password;
+        this.role = Role.USER;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
@@ -98,7 +112,8 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !locked;
+       // return !locked;
+        return true;
     }
 
     @Override
@@ -108,6 +123,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+      //  return enabled;
+        return true;
     }
 }

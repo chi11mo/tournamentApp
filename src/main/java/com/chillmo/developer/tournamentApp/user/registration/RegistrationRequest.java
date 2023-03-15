@@ -12,8 +12,5 @@ import lombok.ToString;
 public class RegistrationRequest {
     private final String twitch;
     private final String eMail;
-    private final String discord;
-    private  final String psn;
-    private final String steam;
     private final String password;
 }
