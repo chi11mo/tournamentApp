@@ -12,7 +12,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
+.idea
 # AWS User-specific
 .idea/**/aws.xml
 
@@ -156,4 +156,6 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-# End of https://www.toptal.com/developers/gitignore/api/java,maven,intellij
+
+
+database/
