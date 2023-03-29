@@ -31,3 +31,10 @@ The platform is built using the following technology stack:
 - Event Feature Tournament
 
 - Event Feature League Session
+## Api-Endpoints
+| Endpoint         | Method | Description |
+|------------------| --- | --- |
+| `/user`          | `GET` | Get a list of all users |
+| `/users/:id`     | `GET` | Get details for a specific user |
+| `/user/register` | `POST` | Create a new user |
+|

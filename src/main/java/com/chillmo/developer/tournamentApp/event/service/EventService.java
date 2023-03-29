@@ -13,6 +13,8 @@ public interface EventService {
      */
     Event addEvent(Event event);
 
+    void closeRegisterToEvent(Event closedEvent);
+
     /**
      * This method add a {@link User} to the participants list.
      *
@@ -35,7 +37,7 @@ public interface EventService {
      * @param event who will be updated.
      * @return the updated event.
      */
-    Event updateEvent(Event event);
+    Event updateEvent(Event event,Event updatedEvent);
 
     /**
      * give a list of all current {@link Event}.
@@ -43,6 +45,18 @@ public interface EventService {
      * @return the list of {@link Event}.
      */
     List<Event> findAllEvents();
-
+    /**
+     * Finds and returns the event with the specified ID from the database, or null if no event is found.
+     *
+     * @param eventId the ID of the event to find
+     * @return the event with the specified ID, or null if no event is found
+     */
     Event findEventById(long eventId);
+    /**
+     * Deletes the specified event from the database.
+     *
+     * @param event the event to delete
+     * @return true if the deletion was successful, false if the event was null
+     */
+    boolean deleteEvent(Event event);
 }

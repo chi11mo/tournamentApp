@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 
+import com.chillmo.developer.tournamentApp.competition.Competition;
 import com.chillmo.developer.tournamentApp.user.domain.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -42,21 +43,24 @@ public class Event {
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
-                    CascadeType.MERGE
+                    CascadeType.MERGE,
+                    CascadeType.REMOVE
             })
     @JoinTable(name = "event_user",
             joinColumns = {@JoinColumn(name = "event_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     @JsonIgnore
     Set<User> registeredUser;
-
+    @JsonIgnore
+    @OneToOne(mappedBy = "event")
+    private Competition competition;
 
     public Event(String eventName, Date beginDate, Date endDate, Date endRegisterDate, boolean isRegisterActive, int maxParticipants) {
         this.eventName = eventName;
         this.beginDate = beginDate;
         this.endDate = endDate;
         this.endRegisterDate = endRegisterDate;
-        this.isRegisterActive = isRegisterActive;
+        this.isRegisterActive = true;
         this.maxParticipants = maxParticipants;
     }
 
@@ -64,4 +68,7 @@ public class Event {
 
     }
 
+    public Set<User> getParticipants() {
+        return registeredUser;
+    }
 }

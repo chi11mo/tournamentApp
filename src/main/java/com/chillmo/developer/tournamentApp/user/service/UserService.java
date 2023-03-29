@@ -1,5 +1,6 @@
 package com.chillmo.developer.tournamentApp.user.service;
 
+import com.chillmo.developer.tournamentApp.event.domain.Event;
 import com.chillmo.developer.tournamentApp.user.domain.Token;
 
 import com.chillmo.developer.tournamentApp.user.domain.User;
@@ -167,4 +168,15 @@ public class UserService implements UserDetailsService {
         return userRepository.findUserByeMail(username);
     }
 
+    /**
+     * Removes the specified {@link Event} from the participating events list of all users who have it in their list.
+     * @param event the event to remove
+     */
+    public void removeEventFromParticipatingEvents(Event event) {
+        List<User> users = userRepository.findByParticipatingEventsContaining(event);
+        for (User user : users) {
+            user.getParticipatingEvents().remove(event);
+            userRepository.save(user);
+        }
+    }
 }

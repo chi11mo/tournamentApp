@@ -6,10 +6,12 @@ import com.chillmo.developer.tournamentApp.event.service.EventService;
 import com.chillmo.developer.tournamentApp.user.domain.User;
 import com.chillmo.developer.tournamentApp.user.response.RegistrationResponse;
 import com.chillmo.developer.tournamentApp.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -19,20 +21,27 @@ public class EventResource {
 
     private final UserService userService;
 
+    @Autowired
     public EventResource(EventService eventService, UserService userService) {
         this.eventService = eventService;
         this.userService = userService;
     }
 
     /**
-     * This method is the Api adress to get all {@link Event}.
+     * This method is the Api address to get all {@link Event}.
      *
      * @return a list of all saved {@link Event}.
      */
     @GetMapping("/all")
     public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> event = eventService.findAllEvents();
-        return new ResponseEntity<List<Event>>(event, HttpStatus.OK);
+        List<Event> allEvents = eventService.findAllEvents();
+
+        if (allEvents.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+
+        return new ResponseEntity<List<Event>>(allEvents, HttpStatus.OK);
     }
 
 
@@ -52,17 +61,21 @@ public class EventResource {
                 request.isRegisterActive(),
                 request.getMaxParticipants()
         );
-        eventService.addEvent(newEvent);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new RegistrationResponse("Event " + request.getEventName() + " is registered."));
+        Event registeredEvent = eventService.addEvent(newEvent);
 
+        if (registeredEvent == null) {
+            return ResponseEntity.badRequest().body(new RegistrationResponse("Invalid event data."));
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED).body(new RegistrationResponse("Event " + registeredEvent.getEventName() + " is registered."));
+        }
 
     }
 
-    @PostMapping("/addUser")
-    public ResponseEntity<RegistrationResponse> registerUserToEvent(long userId, long eventId) {
+    @PostMapping("/{eventId}/addUser")
+    public ResponseEntity<RegistrationResponse> registerUserToEvent(long userId,@PathVariable long eventId) {
         Event event = eventService.findEventById(eventId);
         User user = userService.findUserByID(userId);
+
         if (event == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new RegistrationResponse("Event :" + eventId + " not Found."));
@@ -75,12 +88,52 @@ public class EventResource {
         if (event.getRegisteredUser().contains(user)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new RegistrationResponse("User " + user.getTwitch() + " is already registered."));
-        } else {
-            eventService.addUser(event, user);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new RegistrationResponse("User " + user.getTwitch() + " is registered."));
-
         }
+        if (!event.isRegisterActive() || event.getEndRegisterDate().before(new Date())) {
+            return ResponseEntity.badRequest().body(new RegistrationResponse("Registration for this event is closed."));
+        }
+
+        if (event.getMaxParticipants() <= event.getRegisteredUser().size()) {
+            return ResponseEntity.badRequest().body(new RegistrationResponse("Maximum number of participants reached."));
+        }
+
+        eventService.addUser(event, user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new RegistrationResponse("User " + user.getTwitch() + " is registered."));
+
+
+    }
+
+    /**
+     * Updates a specified event.
+     */
+    @PutMapping("/{eventId}")
+    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody Event updatedEvent) {
+        Event event = eventService.findEventById(eventId);
+        if (event == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event updated = eventService.updateEvent(event, updatedEvent);
+        if (updated == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            return ResponseEntity.ok(updated);
+        }
+    }
+
+    /**
+     * Deletes a specified event.
+     */
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        Event event = eventService.findEventById(eventId);
+        if (event == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        eventService.deleteEvent(event);
+        return ResponseEntity.noContent().build();
     }
 }
 
